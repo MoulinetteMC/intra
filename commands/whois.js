@@ -3,6 +3,7 @@ const {
 	ChatInputCommandInteraction,
 	SlashCommandBuilder,
 	EmbedBuilder,
+  MessageFlags
 } = require("discord.js");
 const Players = require("../models/players");
 
@@ -39,7 +40,7 @@ module.exports = {
 		if (!interaction.member.roles.cache.has("1309990370087801004"))
 			return await interaction.reply({
 				content: "You are not autorized to play on MoulinetteMC",
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 
 		if (
@@ -57,14 +58,14 @@ module.exports = {
 						.setDescription(`**Owned by <@${exist.userid}>**`)
 						.setColor("Green"),
 				],
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 		else
 			return awaitinteraction.reply({
 				content: `${interaction.options.getString(
 					"playername"
 				)} doesn't exist.`,
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 	},
 };

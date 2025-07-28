@@ -2,6 +2,7 @@ const {
 	Client,
 	ChatInputCommandInteraction,
 	SlashCommandBuilder,
+  MessageFlags,
 } = require("discord.js");
 const Players = require("../models/players");
 const { v4: uuid } = require("uuid");
@@ -26,18 +27,18 @@ module.exports = {
 		if (!interaction.member.roles.cache.has("1309990370087801004"))
 			return await interaction.reply({
 				content: "You are not autorized to play on MoulinetteMC",
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 
 		if (preExist = await Players.findOne({ userid: interaction.user.id }))
 			return await interaction.reply({
 				content: `You are already registred under the name **\`${preExist.playername}\`**`,
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 		if (preExist = await Players.findOne({ playername: interaction.options.getString("playername") }))
 			return await interaction.reply({
 				content: `This name as been already taken by <@${preExist.userid}>`,
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 
 		Players.create({

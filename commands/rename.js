@@ -2,6 +2,7 @@ const {
 	Client,
 	ChatInputCommandInteraction,
 	SlashCommandBuilder,
+  MessageFlags,
 } = require("discord.js");
 const Players = require("../models/players");
 
@@ -34,12 +35,12 @@ module.exports = {
 				content: 
             `Your name has been changed from **\`${preExist.playername}\`** ` +
             `to **\`${interaction.options.getString("playername")}\`**`,
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 		} else
 			return await interaction.reply({
 				content: `You are not registered on MoulinetteMC`,
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 	},
 };

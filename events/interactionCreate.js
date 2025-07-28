@@ -6,6 +6,7 @@ const {
 	BaseInteraction,
 	EmbedBuilder,
 	ButtonInteraction,
+  MessageFlags,
 } = require("discord.js");
 const Sessions = require("../models/sessions");
 require("colors");
@@ -35,7 +36,7 @@ module.exports = {
 					embeds: [
 						new EmbedBuilder().setTitle("Intern error!").setColor("Red"),
 					],
-					ephemeral: true,
+					flags: MessageFlags.Ephemeral,
 				};
 				if (interaction.replied || interaction.deferred) {
 					await interaction.followUp(errMsgOpts);
@@ -64,13 +65,13 @@ module.exports = {
 							.setTimestamp(),
 					],
 					components: [],
-					ephemeral: true,
+					flags: MessageFlags.Ephemeral,
 				});
 
 			switch (action) {
 				case "grant":
 					await Sessions.findByIdAndUpdate(token, {
-						granted: true,
+						flags: MessageFlags.Ephemeral,
 					});
 
 					interaction.message.edit({
@@ -81,7 +82,7 @@ module.exports = {
 								.setTimestamp(),
 						],
 						components: [],
-						ephemeral: true,
+						flags: MessageFlags.Ephemeral,
 					});
 					break;
 				case "deny":
@@ -94,7 +95,7 @@ module.exports = {
 								.setTimestamp(),
 						],
 						components: [],
-						ephemeral: true,
+						flags: MessageFlags.Ephemeral,
 					});
 					break;
 			}
