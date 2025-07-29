@@ -47,6 +47,6 @@ module.exports = {
 			userid: interaction.user.id,
 		});
 
-		await interaction.reply({ content: "Registered !", ephemeral: true });
+		await interaction.reply({ content: "Registered !", flags: MessageFlags.Ephemeral });
 	},
 };
