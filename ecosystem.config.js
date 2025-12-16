@@ -6,8 +6,8 @@ module.exports = {
 			script: "./home.js",
 			watch: true,
 			restart_delay: 3000,
-			ignore_watch : ["node_modules", ".env", "start.sh", "logs"],
+			ignore_watch: ["node_modules", ".env", "start.sh", "logs"],
 			time: true,
-		}
-	]
+		},
+	],
 };
