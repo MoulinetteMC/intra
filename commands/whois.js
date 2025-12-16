@@ -3,7 +3,7 @@ const {
 	ChatInputCommandInteraction,
 	SlashCommandBuilder,
 	EmbedBuilder,
-  MessageFlags
+	MessageFlags,
 } = require("discord.js");
 const Players = require("../models/players");
 
@@ -36,13 +36,6 @@ module.exports = {
 	 * @param {ChatInputCommandInteraction} interaction
 	 */
 	async execute(client, interaction) {
-		console.log(`→ whois : ${interaction.user.username}`);
-		if (!interaction.member.roles.cache.has("1309990370087801004"))
-			return await interaction.reply({
-				content: "You are not autorized to play on MoulinetteMC",
-				flags: MessageFlags.Ephemeral,
-			});
-
 		if (
 			(exist = await Players.findOne({
 				playername: interaction.options.getString("playername"),
@@ -61,10 +54,12 @@ module.exports = {
 				flags: MessageFlags.Ephemeral,
 			});
 		else
-			return awaitinteraction.reply({
-				content: `${interaction.options.getString(
-					"playername"
-				)} doesn't exist.`,
+			return await interaction.reply({
+				embeds: [
+					new EmbedBuilder()
+						.setDescription(`${interaction.options.getString("playername")} doesn't exist.`)
+						.setColor("Red")
+				],
 				flags: MessageFlags.Ephemeral,
 			});
 	},

@@ -3,6 +3,7 @@ const {
 	ChatInputCommandInteraction,
 	SlashCommandBuilder,
 	MessageFlags,
+	EmbedBuilder,
 } = require("discord.js");
 const Players = require("../models/players");
 
@@ -31,7 +32,13 @@ module.exports = {
 
 		if (preExistingName)
 			return await interaction.reply({
-				content: `This name as been already taken by <@${preExist.userid}>`,
+				embeds: [
+					new EmbedBuilder()
+						.setDescription(
+							`This name as been already taken by <@${preExist.userid}>`
+						)
+						.setColor("Red"),
+				],
 				flags: MessageFlags.Ephemeral,
 			});
 
@@ -41,14 +48,23 @@ module.exports = {
 				{ playername: interaction.options.getString("playername") }
 			);
 			return await interaction.reply({
-				content:
-					`Your name has been changed from **\`${preExist.playername}\`** ` +
-					`to **\`${interaction.options.getString("playername")}\`**`,
+				embeds: [
+					new EmbedBuilder()
+						.setDescription(
+							`Your name has been changed from **\`${preExist.playername}\`** ` +
+								`to **\`${interaction.options.getString("playername")}\`**`
+						)
+						.setColor("Green"),
+				],
 				flags: MessageFlags.Ephemeral,
 			});
 		} else
 			return await interaction.reply({
-				content: `You are not registered on MoulinetteMC`,
+				embeds: [
+					new EmbedBuilder()
+						.setDescription("You are not registered on MoulinetteMC")
+						.setColor("Red"),
+				],
 				flags: MessageFlags.Ephemeral,
 			});
 	},

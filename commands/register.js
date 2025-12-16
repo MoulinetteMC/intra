@@ -2,7 +2,8 @@ const {
 	Client,
 	ChatInputCommandInteraction,
 	SlashCommandBuilder,
-  MessageFlags,
+	EmbedBuilder,
+	MessageFlags,
 } = require("discord.js");
 const Players = require("../models/players");
 const { v4: uuid } = require("uuid");
@@ -23,21 +24,33 @@ module.exports = {
 	 * @param {ChatInputCommandInteraction} interaction
 	 */
 	async execute(client, interaction) {
-		console.log(`→ register : ${interaction.user.username}`)
-		if (!interaction.member.roles.cache.has("1309990370087801004"))
+		const preExistingAccount = await Players.findOne({
+			userid: interaction.user.id,
+		});
+		if (preExistingAccount)
 			return await interaction.reply({
-				content: "You are not autorized to play on MoulinetteMC",
+				embeds: [
+					new EmbedBuilder()
+						.setDescription(
+							`You are already registered under the name **\`${preExist.playername}\`**`
+						)
+						.setColor("Red"),
+				],
 				flags: MessageFlags.Ephemeral,
 			});
 
-		if (preExist = await Players.findOne({ userid: interaction.user.id }))
+		const preExistingName = await Players.findOne({
+			playername: interaction.options.getString("playername"),
+		});
+		if (preExistingName)
 			return await interaction.reply({
-				content: `You are already registred under the name **\`${preExist.playername}\`**`,
-				flags: MessageFlags.Ephemeral,
-			});
-		if (preExist = await Players.findOne({ playername: interaction.options.getString("playername") }))
-			return await interaction.reply({
-				content: `This name as been already taken by <@${preExist.userid}>`,
+				embeds: [
+					new EmbedBuilder()
+						.setDescription(
+							`This name as been already taken by <@${preExist.userid}>`
+						)
+						.setColor("Red"),
+				],
 				flags: MessageFlags.Ephemeral,
 			});
 
@@ -47,6 +60,11 @@ module.exports = {
 			userid: interaction.user.id,
 		});
 
-		await interaction.reply({ content: "Registered !", flags: MessageFlags.Ephemeral });
+		await interaction.reply({
+			embeds: [
+				new EmbedBuilder().setDescription("Registered !").setColor("Green"),
+			],
+			flags: MessageFlags.Ephemeral,
+		});
 	},
 };
