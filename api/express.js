@@ -92,7 +92,7 @@ module.exports = async (client) => {
 				res.json({
 					auth: 1,
 					playername: playerData.playername,
-					uuid: sessionData.uuid
+					uuid: sessionData.uuid,
 				});
 			} else {
 				res.status(500);
