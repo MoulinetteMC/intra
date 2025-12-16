@@ -6,7 +6,7 @@ const {
 	BaseInteraction,
 	EmbedBuilder,
 	ButtonInteraction,
-  MessageFlags,
+	MessageFlags,
 } = require("discord.js");
 const Sessions = require("../models/sessions");
 require("colors");
@@ -28,7 +28,14 @@ module.exports = {
 					`Command "${interaction.commandName}" do not exist`.red
 				);
 
+			if (!interaction.member.roles.cache.has(process.env.ROLE_ID))
+				return await interaction.reply({
+					content: "You are not autorized to play on MoulinetteMC",
+					flags: MessageFlags.Ephemeral,
+				});
+
 			try {
+				console.log(`→ ${cmd.data.name} : ${interaction.user.username}`);
 				await cmd.execute(client, interaction);
 			} catch (err) {
 				console.error(err);
@@ -100,7 +107,7 @@ module.exports = {
 					break;
 			}
 		} else if (interaction.isAutocomplete()) {
-			const command = client.slash.get(interaction.commandName)
+			const command = client.slash.get(interaction.commandName);
 
 			if (!command || !command.autocomplete) return;
 
