@@ -30,7 +30,11 @@ module.exports = {
 
 			if (!interaction.member.roles.cache.has(process.env.ROLE_ID))
 				return await interaction.reply({
-					content: "You are not autorized to play on MoulinetteMC",
+					embeds: [
+						new EmbedBuilder()
+							.setDescription("You are not autorized to play on MoulinetteMC")
+							.toJSON(),
+					],
 					flags: MessageFlags.Ephemeral,
 				});
 
