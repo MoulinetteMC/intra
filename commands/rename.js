@@ -2,7 +2,7 @@ const {
 	Client,
 	ChatInputCommandInteraction,
 	SlashCommandBuilder,
-  MessageFlags,
+	MessageFlags,
 } = require("discord.js");
 const Players = require("../models/players");
 
@@ -22,19 +22,28 @@ module.exports = {
 	 * @param {ChatInputCommandInteraction} interaction
 	 */
 	async execute(client, interaction) {
-		console.log(`→ register : ${interaction.user.username}`);
+		const preExistingAccount = await Players.findOne({
+			userid: interaction.user.id,
+		});
+		const preExistingName = await Players.findOne({
+			playername: interaction.options.getString("playername"),
+		});
 
-		const preExist = await Players.findOne({ userid: interaction.user.id });
+		if (preExistingName)
+			return await interaction.reply({
+				content: `This name as been already taken by <@${preExist.userid}>`,
+				flags: MessageFlags.Ephemeral,
+			});
 
-		if (preExist) {
+		if (preExistingAccount) {
 			await Players.findOneAndUpdate(
 				{ userid: interaction.user.id },
 				{ playername: interaction.options.getString("playername") }
 			);
 			return await interaction.reply({
-				content: 
-            `Your name has been changed from **\`${preExist.playername}\`** ` +
-            `to **\`${interaction.options.getString("playername")}\`**`,
+				content:
+					`Your name has been changed from **\`${preExist.playername}\`** ` +
+					`to **\`${interaction.options.getString("playername")}\`**`,
 				flags: MessageFlags.Ephemeral,
 			});
 		} else
