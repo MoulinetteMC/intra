@@ -1,28 +1,28 @@
 {
-  "name": "moulinettemc-intra",
-  "version": "1.1.1",
-  "description": "",
-  "homepage": "https://github.com/moulinettemc/intra#readme",
-  "bugs": {
-    "url": "https://github.com/moulinettemc/intra/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/moulinettemc/intra.git"
-  },
-  "license": "MIT",
-  "author": "ValentinKh",
-  "type": "commonjs",
-  "main": "",
-  "dependencies": {
-    "axios": "^1.7.9",
-    "colors": "^1.4.0",
-    "discord-interactions": "^4.1.0",
-    "discord.js": "^14.16.3",
-    "dotenv": "^16.4.7",
-    "express": "^4.21.2",
-    "mongoose": "^8.9.2",
-    "uid": "^2.0.2",
-    "uuid": "^11.0.3"
-  }
+	"name": "moulinettemc-intra",
+	"version": "1.1.2",
+	"description": "",
+	"homepage": "https://github.com/moulinettemc/intra#readme",
+	"bugs": {
+		"url": "https://github.com/moulinettemc/intra/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/moulinettemc/intra.git"
+	},
+	"license": "MIT",
+	"author": "ValentinKh",
+	"type": "commonjs",
+	"main": "",
+	"dependencies": {
+		"axios": "^1.7.9",
+		"colors": "^1.4.0",
+		"discord-interactions": "^4.1.0",
+		"discord.js": "^14.16.3",
+		"dotenv": "^16.4.7",
+		"express": "^4.21.2",
+		"mongoose": "^8.9.2",
+		"uid": "^2.0.2",
+		"uuid": "^11.0.3"
+	}
 }
