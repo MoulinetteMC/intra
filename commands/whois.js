@@ -16,7 +16,9 @@ module.exports = {
 				.setName("playername")
 				.setDescription("In-game pseudo")
 				.setAutocomplete(true)
-				.setRequired(true)
+		)
+		.addUserOption((opt) =>
+			opt.setName("user").setDescription("Discord user").setRequired(false)
 		),
 	/**
 	 * @param {ChatInputCommandInteraction} interaction
@@ -36,31 +38,74 @@ module.exports = {
 	 * @param {ChatInputCommandInteraction} interaction
 	 */
 	async execute(client, interaction) {
-		if (
-			(exist = await Players.findOne({
-				playername: interaction.options.getString("playername"),
-			}))
-		)
+		if (interaction.options.getString("playername")) {
+			const playerName = interaction.options.getString("playername");
+			const player = await Players.findOne({
+				playername: playerName,
+			});
+
+			if (player)
+				return await interaction.reply({
+					embeds: [
+						new EmbedBuilder()
+							.setAuthor({
+								name: player.playername,
+								iconURL: `https://www.mc-heads.net/avatar/${player.playername}/32.png`,
+							})
+							.setDescription(`**Owned by <@${player.userid}>**`)
+							.setColor("Green"),
+					],
+					flags: MessageFlags.Ephemeral,
+				});
+			else
+				return await interaction.reply({
+					embeds: [
+						new EmbedBuilder()
+							.setDescription(`**\`${playerName}\`** doesn't exist.`)
+							.setColor("Red"),
+					],
+					flags: MessageFlags.Ephemeral,
+				});
+		} else if (interaction.options.getUser("user")) {
+			const user = interaction.options.getUser("user");
+
+			const player = await Players.findOne({
+				userid: user.id,
+			});
+
+			if (player)
+				return await interaction.reply({
+					embeds: [
+						new EmbedBuilder()
+							.setAuthor({
+								name: player.playername,
+								iconURL: `https://www.mc-heads.net/avatar/${player.playername}/32.png`,
+							})
+							.setDescription(`**Owned by <@${player.userid}>**`)
+							.setColor("Green"),
+					],
+					flags: MessageFlags.Ephemeral,
+				});
+			else
+				return await interaction.reply({
+					embeds: [
+						new EmbedBuilder()
+							.setDescription(
+								`**<@${user.id}>** don't have a MoulinetteMC account.`
+							)
+							.setColor("Red"),
+					],
+					flags: MessageFlags.Ephemeral,
+				});
+		} else {
 			return await interaction.reply({
 				embeds: [
 					new EmbedBuilder()
-						.setAuthor({
-							name: exist.playername,
-							iconURL: `https://www.mc-heads.net/avatar/${exist.playername}/64.png`,
-						})
-						.setDescription(`**Owned by <@${exist.userid}>**`)
-						.setColor("Green"),
+						.setDescription(`Please use at least one option.`)
+						.setColor("Red"),
 				],
 				flags: MessageFlags.Ephemeral,
 			});
-		else
-			return await interaction.reply({
-				embeds: [
-					new EmbedBuilder()
-						.setDescription(`${interaction.options.getString("playername")} doesn't exist.`)
-						.setColor("Red")
-				],
-				flags: MessageFlags.Ephemeral,
-			});
+		}
 	},
 };

@@ -23,7 +23,6 @@ module.exports = {
 	 * @param {ChatInputCommandInteraction} interaction
 	 */
 	async execute(client, interaction) {
-
 		const preExistingName = await Players.findOne({
 			playername: interaction.options.getString("playername"),
 		});
