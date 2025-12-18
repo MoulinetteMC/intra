@@ -23,9 +23,7 @@ module.exports = {
 	 * @param {ChatInputCommandInteraction} interaction
 	 */
 	async execute(client, interaction) {
-		const preExistingAccount = await Players.findOne({
-			userid: interaction.user.id,
-		});
+
 		const preExistingName = await Players.findOne({
 			playername: interaction.options.getString("playername"),
 		});
@@ -35,12 +33,16 @@ module.exports = {
 				embeds: [
 					new EmbedBuilder()
 						.setDescription(
-							`This name as been already taken by <@${preExist.userid}>`
+							`This name as been already taken by <@${preExistingName.userid}>`
 						)
 						.setColor("Red"),
 				],
 				flags: MessageFlags.Ephemeral,
 			});
+
+		const preExistingAccount = await Players.findOne({
+			userid: interaction.user.id,
+		});
 
 		if (preExistingAccount) {
 			await Players.findOneAndUpdate(
@@ -51,7 +53,7 @@ module.exports = {
 				embeds: [
 					new EmbedBuilder()
 						.setDescription(
-							`Your name has been changed from **\`${preExist.playername}\`** ` +
+							`Your name has been changed from **\`${preExistingAccount.playername}\`** ` +
 								`to **\`${interaction.options.getString("playername")}\`**`
 						)
 						.setColor("Green"),
