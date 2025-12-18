@@ -32,7 +32,7 @@ module.exports = {
 				embeds: [
 					new EmbedBuilder()
 						.setDescription(
-							`You are already registered under the name **\`${preExist.playername}\`**`
+							`You are already registered under the name **\`${preExistingAccount.playername}\`**`
 						)
 						.setColor("Red"),
 				],
@@ -47,7 +47,7 @@ module.exports = {
 				embeds: [
 					new EmbedBuilder()
 						.setDescription(
-							`This name as been already taken by <@${preExist.userid}>`
+							`This name as been already taken by <@${preExistingName.userid}>`
 						)
 						.setColor("Red"),
 				],
