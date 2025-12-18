@@ -82,7 +82,7 @@ module.exports = {
 			switch (action) {
 				case "grant":
 					await Sessions.findByIdAndUpdate(token, {
-						flags: MessageFlags.Ephemeral,
+						granted: true,
 					});
 
 					interaction.message.edit({
