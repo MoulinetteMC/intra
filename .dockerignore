@@ -1,15 +1,23 @@
+# NodeJS & NPM
 node_modules
 npm-debug.log
 .env
+
+# Windows
 .DS_Store
+
+# Git
 .git
 .gitignore
-dist
-build
-coverage
-logs
-*.log
+
+# Github
+.github
+LICENSE
+README.md
+
+# Visual Code Studio
 /.vscode
+
+# Docker
 Dockerfile
 docker-compose.yml
-*.tgz
