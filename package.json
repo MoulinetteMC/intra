@@ -1,7 +1,7 @@
 {
 	"name": "moulinettemc-intra",
 	"version": "1.2.0",
-	"description": "",
+	"description": "MoulinetteMC's manager - Discord Bot",
 	"homepage": "https://github.com/moulinettemc/intra#readme",
 	"bugs": {
 		"url": "https://github.com/moulinettemc/intra/issues"
