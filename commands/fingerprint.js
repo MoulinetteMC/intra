@@ -1,6 +1,7 @@
 const {
 	Client,
 	ChatInputCommandInteraction,
+	codeBlock,
 	SlashCommandBuilder,
 	EmbedBuilder,
 	MessageFlags,
