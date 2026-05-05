@@ -47,6 +47,7 @@ module.exports = {
 									name: playerAccount.playername,
 									iconURL: `https://www.mc-heads.net/avatar/${playerAccount.playername}/32.png`,
 								})
+								.setTitle("Sessions history")
 								.setDescription(
 									sessionsHistory
 										.map((s) => {

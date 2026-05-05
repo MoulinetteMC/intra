@@ -7,8 +7,12 @@ const {
 	EmbedBuilder,
 	ButtonInteraction,
 	MessageFlags,
+	ActionRowBuilder,
+	ButtonBuilder,
+	ButtonStyle,
 } = require("discord.js");
 const Sessions = require("../models/sessions");
+const fingerprint = require("../util/fingerprintServer");
 require("colors");
 
 module.exports = {
@@ -25,7 +29,7 @@ module.exports = {
 
 			if (!cmd)
 				return console.error(
-					`Command "${interaction.commandName}" do not exist`.red
+					`Command "${interaction.commandName}" do not exist`.red,
 				);
 
 			if (!interaction.member.roles.cache.has(process.env.ROLE_ID))
@@ -45,7 +49,7 @@ module.exports = {
 				console.error(err);
 				const errMsgOpts = {
 					embeds: [
-						new EmbedBuilder().setTitle("Intern error!").setColor("Red"),
+						new EmbedBuilder().setTitle("Internal error!").setColor("Red"),
 					],
 					flags: MessageFlags.Ephemeral,
 				};
@@ -63,6 +67,28 @@ module.exports = {
 			/**
 			 * @param {ButtonInteraction} interaction
 			 */
+
+			if (interaction.customId == "fingerprint")
+				if (await fingerprint())
+					return interaction.message.edit({
+						embeds: [
+							...interaction.message.embeds,
+							new EmbedBuilder()
+								.setColor("Greyple")
+								.setTitle("Server's fingerprint")
+								.setDescription(codeBlock(fingerprint)),
+						],
+						components: [],
+					});
+				else
+					return interaction.message.reply({
+						embeds: [
+							new EmbedBuilder()
+								.setColor("Red")
+								.setDescription("Impossible to retrieve fingerprint..."),
+						],
+						components: []
+					});
 
 			const [action, token] = interaction.customId.split("-");
 			const session = await Sessions.findById(token);
@@ -92,8 +118,14 @@ module.exports = {
 								.setTitle("Access granted! Have fun!")
 								.setTimestamp(),
 						],
-						components: [],
-						flags: MessageFlags.Ephemeral,
+						components: [
+							new ActionRowBuilder().addComponents(
+								new ButtonBuilder()
+									.setCustomId(`fingerprint`)
+									.setStyle(ButtonStyle.Primary)
+									.setLabel("Get server's fingerprint"),
+							),
+						],
 					});
 					break;
 				case "deny":

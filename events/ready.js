@@ -20,7 +20,7 @@ module.exports = {
 			});
 		} else {
 			client.user.setPresence({
-				status: "idle",
+				status: "dnd",
 				activities: [{ name: `0% archi tags`, type: ActivityType.Watching }],
 			});
 		}
