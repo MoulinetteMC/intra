@@ -6,7 +6,7 @@ const {
 	EmbedBuilder,
 	MessageFlags,
 } = require("discord.js");
-const fingerprint = require("../util/fingerprintServer");
+const getFingerprint = require("../util/getFingerprint");
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -18,13 +18,14 @@ module.exports = {
 	 * @param {ChatInputCommandInteraction} interaction
 	 */
 	async execute(client, interaction) {
-		if (await fingerprint())
+		const figerprint = await getFingerprint()
+		if (figerprint)
 			return await interaction.reply({
 				embeds: [
 					new EmbedBuilder()
 						.setColor("Greyple")
 						.setTitle("Server's fingerprint")
-						.setDescription(codeBlock(fingerprint)),
+						.setDescription(codeBlock(figerprint)),
 				],
         flags: MessageFlags.Ephemeral,
 			});

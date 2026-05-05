@@ -12,7 +12,7 @@ const {
 	ButtonStyle,
 } = require("discord.js");
 const Sessions = require("../models/sessions");
-const fingerprint = require("../util/fingerprintServer");
+const getFingerprint = require("../util/getFingerprint");
 require("colors");
 
 module.exports = {
@@ -68,15 +68,16 @@ module.exports = {
 			 * @param {ButtonInteraction} interaction
 			 */
 
-			if (interaction.customId == "fingerprint")
-				if (await fingerprint())
+			if (interaction.customId == "fingerprint") {
+				const figerprint = await getFingerprint();
+				if (figer)
 					return interaction.message.edit({
 						embeds: [
 							...interaction.message.embeds,
 							new EmbedBuilder()
 								.setColor("Greyple")
 								.setTitle("Server's fingerprint")
-								.setDescription(codeBlock(fingerprint)),
+								.setDescription(codeBlock(figerprint)),
 						],
 						components: [],
 					});
@@ -87,8 +88,9 @@ module.exports = {
 								.setColor("Red")
 								.setDescription("Impossible to retrieve fingerprint..."),
 						],
-						components: []
+						components: [],
 					});
+			}
 
 			const [action, token] = interaction.customId.split("-");
 			const session = await Sessions.findById(token);

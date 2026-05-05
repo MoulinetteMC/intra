@@ -4,7 +4,7 @@ const router = express.Router();
 const Players = require("../models/players");
 const Session = require("../models/sessions");
 
-router.get("/session", async (req, res) => {
+router.get("/", async (req, res) => {
 	console.log(`◊ /session : ${req.socket.remoteAddress.split(":").pop()}`);
 	if (!req.query.token) {
 		res.status(400);
