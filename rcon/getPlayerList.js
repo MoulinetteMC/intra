@@ -4,7 +4,7 @@ module.exports = async function () {
 	const response = await rcon("list");
 
 	if (response) {
-		const endOfLine = response.split(": ")[parties.length - 1].trim();
+		const endOfLine = response.split(": ").pop().trim();
 
 		if (endOfLine == "" || endOfLine.includes("players online"))
 			return [];
