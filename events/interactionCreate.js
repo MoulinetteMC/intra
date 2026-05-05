@@ -70,7 +70,7 @@ module.exports = {
 
 			if (interaction.customId == "fingerprint") {
 				const figerprint = await getFingerprint();
-				if (figer)
+				if (figerprint)
 					return interaction.message.edit({
 						embeds: [
 							...interaction.message.embeds,
