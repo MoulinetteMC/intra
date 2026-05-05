@@ -6,37 +6,39 @@ const {
 	EmbedBuilder,
 	MessageFlags,
 } = require("discord.js");
-const getFingerprint = require("../rcon/getFingerprint");
+const getPlayerList = require("../rcon/getPlayerList");
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName("fingerprint")
-		.setDescription("Get server's fingerprint"),
+		.setName("list")
+		.setDescription("Get players list online on the server."),
 
 	/**
 	 * @param {Client} client
 	 * @param {ChatInputCommandInteraction} interaction
 	 */
 	async execute(client, interaction) {
-		const figerprint = await getFingerprint()
-		if (figerprint)
+		const playerList = await getPlayerList();
+		if (playerList)
 			return await interaction.reply({
 				embeds: [
 					new EmbedBuilder()
-						.setColor("Greyple")
-						.setTitle("Server's fingerprint")
-						.setDescription(codeBlock(figerprint)),
+						.setColor("Blurple")
+						.setTitle("Players online")
+						.setDescription(
+							playerList.map((name) => `- \`${name}\``).join("\n"),
+						),
 				],
-        flags: MessageFlags.Ephemeral,
+				flags: MessageFlags.Ephemeral,
 			});
 		else
 			return await interaction.reply({
 				embeds: [
 					new EmbedBuilder()
-						.setColor("Red")
-						.setDescription("Impossible to retrieve fingerprint..."),
+						.setColor("Blurple")
+						.setDescription("There is no player online."),
 				],
-        flags: MessageFlags.Ephemeral,
+				flags: MessageFlags.Ephemeral,
 			});
 	},
 };

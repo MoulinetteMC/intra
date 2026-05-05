@@ -12,7 +12,7 @@ const {
 	ButtonStyle,
 } = require("discord.js");
 const Sessions = require("../models/sessions");
-const getFingerprint = require("../util/getFingerprint");
+const getFingerprint = require("../rcon/getFingerprint");
 require("colors");
 
 module.exports = {
