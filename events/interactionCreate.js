@@ -71,7 +71,7 @@ module.exports = {
 			if (interaction.customId == "fingerprint") {
 				const figerprint = await getFingerprint();
 				if (figerprint)
-					return interaction.message.edit({
+					return interaction.update({
 						embeds: [
 							...interaction.message.embeds,
 							new EmbedBuilder()
@@ -96,7 +96,7 @@ module.exports = {
 			const session = await Sessions.findById(token);
 
 			if (!session)
-				return interaction.message.edit({
+				return interaction.update({
 					embeds: [
 						new EmbedBuilder()
 							.setColor("Grey")
@@ -113,7 +113,7 @@ module.exports = {
 						granted: true,
 					});
 
-					interaction.message.edit({
+					interaction.update({
 						embeds: [
 							new EmbedBuilder()
 								.setColor("Green")
@@ -132,7 +132,7 @@ module.exports = {
 					break;
 				case "deny":
 					await Sessions.findByIdAndDelete(token);
-					interaction.message.edit({
+					interaction.update({
 						embeds: [
 							new EmbedBuilder()
 								.setColor("Red")
