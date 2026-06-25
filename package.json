@@ -12,22 +12,32 @@
 	},
 	"license": "MIT",
 	"author": "ValentinKh",
-	"type": "commonjs",
-	"main": "home.js",
+	"type": "module",
+	"exports": "./dist/home.js",
+	"engines": {
+		"node": ">=24"
+	},
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"dependencies": {
 		"axios": "^1.7.9",
-		"colors": "^1.4.0",
 		"dayjs": "^1.11.19",
 		"discord-interactions": "^4.1.0",
-		"discord.js": "^14.16.3",
+		"discord.js": "^14.26.4",
 		"dotenv": "^16.4.7",
 		"express": "^4.21.2",
 		"mongoose": "^8.9.2",
 		"rcon-client": "^4.2.5",
 		"uid": "^2.0.2",
 		"uuid": "^11.0.3"
+	},
+	"devDependencies": {
+		"@types/express": "^5.0.6",
+		"@types/node": "^25.9.4",
+		"nodemon": "^3.1.14",
+		"ts-node": "^10.9.2",
+		"tsx": "^4.22.4",
+		"typescript": "^6.0.3"
 	}
 }
