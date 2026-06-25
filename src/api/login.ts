@@ -1,20 +1,19 @@
-const express = require("express");
-const router = express.Router();
-
-const Players = require("../models/players");
-const Session = require("../models/sessions");
-const {
+import express from "express";
+import {
+	Client,
 	EmbedBuilder,
 	ActionRowBuilder,
 	ButtonBuilder,
 	ButtonStyle,
-} = require("discord.js");
+} from "discord.js";
+import { uid } from "uid/secure";
+import Players from "../models/players.js";
+import Session from "../models/sessions.js";
 
-const { uid } = require("uid/secure");
+const router = express.Router();
 
-module.exports = function (client) {
+export default function ApiLogin(client: Client) {
 	router.get("/", async (req, res) => {
-		console.log(`◊ /login : ${req.socket.remoteAddress.split(":").pop()}`);
 		if (!req.query.username) {
 			res.status(400);
 			res.json({ error: "Missing username" });
@@ -22,6 +21,7 @@ module.exports = function (client) {
 			const playerData = await Players.findOne({
 				playername: req.query.username,
 			});
+
 			if (!playerData) {
 				res.status(401);
 				res.send({ error: "Unregistered player" });
@@ -53,7 +53,8 @@ module.exports = function (client) {
 									.setCustomId(`deny-${token}`)
 									.setStyle(ButtonStyle.Danger)
 									.setLabel("No"),
-							),
+							)
+							.toJSON(),
 					],
 				});
 
@@ -64,4 +65,4 @@ module.exports = function (client) {
 	});
 
 	return router;
-};
+}
