@@ -1,6 +1,8 @@
-const { Rcon } = require("rcon-client");
+import { Rcon } from "rcon-client";
 
-module.exports = async function (command) {
+export default async function RconDriver(command: string) {
+	if (!process.env.RCON_PWD) throw new Error("RCON_PWD not set.");
+
 	const rcon = await Rcon.connect({
 		host: "moulinettemc-server",
 		port: 25575,
@@ -15,4 +17,4 @@ module.exports = async function (command) {
 	} finally {
 		await rcon.end();
 	}
-};
+}
