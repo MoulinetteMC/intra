@@ -1,4 +1,5 @@
 import {
+	type APIButtonComponentWithCustomId,
 	Client,
 	type ClientOptions,
 	Collection,
@@ -15,6 +16,7 @@ import { connect } from "mongoose";
 import type MoulinetteCommand from "../types/command.js";
 import type MoulinetteEvent from "../types/event.js";
 import ApiExpress from "../api/express.js";
+import type MoulinetteComponent from "../types/component.js";
 
 function isJsOrTsFile(file: string): boolean {
 	return file.endsWith(".js") || file.endsWith(".ts");
@@ -22,11 +24,13 @@ function isJsOrTsFile(file: string): boolean {
 
 export default class MoulinetteClient extends Client {
 	constructor(options: ClientOptions) {
-		if (!process.env.DISCORD_TOKEN) throw new Error("DISCORD_TOKEN not set.");
+		if (!process.env["DISCORD_TOKEN"])
+			throw new Error("DISCORD_TOKEN not set.");
 
 		super(options);
 
 		this.commands = new Collection();
+		this.components = new Collection();
 
 		console.log("α Starting Intra-MoulinetteMC");
 
@@ -34,21 +38,24 @@ export default class MoulinetteClient extends Client {
 	}
 
 	public commands: Collection<string, MoulinetteCommand>;
+	public components: Collection<RegExp, MoulinetteComponent>;
+	private directory: string = resolve(
+		dirname(fileURLToPath(import.meta.url)),
+		"..",
+	);
 
 	private async init(): Promise<void> {
 		await this.loadCommands();
 		await this.registerCommands();
 		await this.loadEvents();
+		await this.loadComponents();
 		await this.connectDatabase();
 		this.startApi();
-		await this.login(process.env.DISCORD_TOKEN);
+		await this.login(process.env["DISCORD_TOKEN"]);
 	}
 
 	private async loadCommands(): Promise<void> {
-		const commands: MoulinetteCommand[] = [];
-
-		const directory = dirname(fileURLToPath(import.meta.url));
-		const commandsPath = join(resolve(directory, ".."), "commands");
+		const commandsPath = join(this.directory, "commands");
 
 		if (!existsSync(commandsPath)) return;
 
@@ -57,38 +64,46 @@ export default class MoulinetteClient extends Client {
 			const module = await import(resolve(commandsPath, file));
 			const command = module.default as MoulinetteCommand;
 
-			console.log(`➤ [command] /${command.data.name}`);
-			this.commands.set(command.data.name, command as any);
-
-			commands.push(command);
+			console.log(`+ [command] /${command.data.name}`);
+			this.commands.set(command.data.name, command);
 		}
 
-		console.log(`➤ ${commands.length} commands loaded !`);
+		console.log(`> ${this.commands.size} commands loaded !`);
 	}
 
 	private async registerCommands(): Promise<void> {
-		if (process.env.DISCORD_TOKEN && process.env.DISCORD_CLIENT_ID) {
-			try {
-				const data = (await new REST()
-					.setToken(process.env.DISCORD_TOKEN)
-					.put(Routes.applicationCommands(process.env.DISCORD_CLIENT_ID), {
-						body: [...this.commands.map((c) => c.data.toJSON())],
-					})) as any[];
+		if (
+			!process.env["DISCORD_TOKEN"] ||
+			!process.env["DISCORD_CLIENT_ID"] ||
+			!process.env["A1_GUILD_ID"]
+		)
+			throw new Error(
+				"DISCORD_TOKEN or DISCORD_CLIENT_ID or A1_GUILD_ID not set.",
+			);
 
-				console.log(`⯐ ${data.length} commands registered !`);
-			} catch (e) {
-				console.error(e);
-			}
-		} else {
-			throw new Error("DISCORD_TOKEN or DISCORD_CLIENT_ID not set.");
+		try {
+			const data = (await new REST()
+				.setToken(process.env["DISCORD_TOKEN"])
+				.put(
+					Routes.applicationGuildCommands(
+						process.env["DISCORD_CLIENT_ID"],
+						process.env["A1_GUILD_ID"],
+					),
+					{
+						body: this.commands.map((c) => c.data.toJSON()),
+					},
+				)) as any[];
+
+			console.log(`> ${data.length} commands registered !`);
+		} catch (e) {
+			console.error(e);
 		}
 	}
 
 	private async loadEvents(): Promise<void> {
 		let eventCount = 0;
 
-		const directory = dirname(fileURLToPath(import.meta.url));
-		const eventsPath = join(resolve(directory, ".."), "events");
+		const eventsPath = join(this.directory, "events");
 
 		if (!existsSync(eventsPath)) return;
 
@@ -96,35 +111,61 @@ export default class MoulinetteClient extends Client {
 		for (const file of eventFiles) {
 			const module = await import(resolve(eventsPath, file));
 			const event = module.default as MoulinetteEvent;
-			console.log(`★ [event]: ${event.name}`);
+			console.log(`+ [event]: ${event.name}`);
 
 			if (event.once) {
 				this.once(
 					event.name,
-					async (...args: any[]) => await event.execute(this, ...args),
+					async (...args) => await event.execute(this, ...args),
 				);
 			} else {
 				this.on(
 					event.name,
-					async (...args: any[]) => await event.execute(this, ...args),
+					async (...args) => await event.execute(this, ...args),
 				);
 			}
 
 			eventCount++;
 		}
-		console.log(`★ ${eventCount} events loaded !`);
+		console.log(`> ${eventCount} events loaded !`);
+	}
+
+	private async loadComponents(): Promise<void> {
+		const componentsPath = join(this.directory, "components");
+
+		if (!existsSync(componentsPath)) return;
+
+		const commandFiles = readdirSync(componentsPath).filter(isJsOrTsFile);
+		for (const file of commandFiles) {
+			const module = await import(resolve(componentsPath, file));
+			const component = module.default as MoulinetteComponent;
+
+			if (
+				component.regexp.test(
+					(component.data.toJSON() as APIButtonComponentWithCustomId).custom_id,
+				)
+			) {
+				console.error("Component's RegExp does not matches.");
+				break;
+			}
+
+			console.log(`+ [component] ${component.regexp.toString()}`);
+			this.components.set(component.regexp, component);
+		}
+
+		console.log(`> ${this.components.size} components loaded !`);
 	}
 
 	private async connectDatabase(): Promise<void> {
-		if (!process.env.DATABASE_URI) throw new Error("DATABASE_URI not set.");
-		connect(process.env.DATABASE_URI, {
+		if (!process.env["DATABASE_URI"]) throw new Error("DATABASE_URI not set.");
+		connect(process.env["DATABASE_URI"], {
 			autoIndex: false, // Don't build indexes
 			maxPoolSize: 10, // Maintain up to 10 socket connections
 			serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
 			socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
 			family: 4, // Use IPv4, skip trying IPv6
 		}).then(() => {
-			console.log("✔ MongoDB connected !");
+			console.log("> MongoDB connected !");
 		});
 	}
 
