@@ -6,44 +6,33 @@ const router = express.Router();
 
 export default function ApiSession() {
 	router.get("/", async (req, res) => {
-		if (!req.query.token) {
-			res.status(400);
-			res.json({ error: "Missing token" });
-		} else {
-			const sessionData = await Session.findById(req.query.token);
+		if (!req.query["token"])
+			return res.status(400).json({ error: "Missing token" });
 
-			if (!sessionData) {
-				// Session expired or inexistant
-				res.status(200);
-				res.json({ auth: -1 });
-			} else if (!sessionData.granted) {
-				// Session denied
-				res.status(200);
-				res.json({ auth: 0 });
-			} else if (sessionData.granted) {
-				// Session granted
+		const sessionData = await Session.findById(req.query["token"]);
 
-				const playerData = await Players.findById(
-					sessionData.uuid,
-					"playername", // Returns only "playername" field.
-				);
+		if (!sessionData)
+			// Session expired or inexistant
+			return res.status(200).json({ auth: -1 });
+		else if (!sessionData.granted)
+			// Session denied
+			return res.status(200).json({ auth: 0 });
+		else if (sessionData.granted) {
+			// Session granted
+			const playerData = await Players.findById(
+				sessionData.uuid,
+				"playername", // Returns only "playername" field.
+			);
 
-				if (playerData) {
-					res.status(200);
-					res.json({
-						auth: 1,
-						playername: playerData.playername,
-						uuid: sessionData.uuid,
-					});
-				} else {
-					res.status(500);
-					res.json({ error: "Player is not registered..." });
-				}
-			} else {
-				res.status(500);
-				res.json({ error: "Something goes wrong..." });
-			}
-		}
+			if (!playerData)
+				return res.status(500).json({ error: "Player is not registered..." });
+
+			return res.status(200).json({
+				auth: 1,
+				playername: playerData.playername,
+				uuid: sessionData.uuid,
+			});
+		} else return res.status(500).json({ error: "Something goes wrong..." });
 	});
 
 	return router;
