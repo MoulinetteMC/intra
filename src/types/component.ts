@@ -1,19 +1,18 @@
 import {
-	type InteractionReplyOptions,
-	type MessageComponentBuilder,
-	UserContextMenuCommandInteraction,
+	ButtonBuilder,
+	ButtonInteraction,
 } from "discord.js";
 import MoulinetteClient from "../classes/client.js";
 
-export type MoulinetteMessageComponent = {
-	data: MessageComponentBuilder;
+export type MoulinetteButtonComponent = {
+	data: ButtonBuilder;
+	regexp: RegExp;
 	execute: (
 		client: MoulinetteClient,
-		interaction: UserContextMenuCommandInteraction
-	) => Promise<InteractionReplyOptions>;
+		interaction: ButtonInteraction,
+	) => void | Promise<void>;
 };
 
-type MoulinetteComponent =
-	| MoulinetteMessageComponent
+type MoulinetteComponent = MoulinetteButtonComponent;
 
-export type { MoulinetteComponent as default }
+export type { MoulinetteComponent as default };

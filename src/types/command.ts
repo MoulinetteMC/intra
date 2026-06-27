@@ -1,24 +1,32 @@
 import {
-  type ApplicationCommandChoicesData,
+	type ApplicationCommandOptionChoiceData,
 	AutocompleteInteraction,
 	ChatInputCommandInteraction,
 	type InteractionReplyOptions,
 	SlashCommandBuilder,
+	type SlashCommandOptionsOnlyBuilder,
+	type SlashCommandSubcommandsOnlyBuilder,
 } from "discord.js";
 import MoulinetteClient from "../classes/client.js";
 
-type MoulinetteSlashCommand = {
-	data: SlashCommandBuilder;
+type AutocompleteReturnable = readonly ApplicationCommandOptionChoiceData<
+	string | number
+>[];
+
+export type MoulinetteSlashCommand = {
+	data:
+		| SlashCommandBuilder
+		| SlashCommandOptionsOnlyBuilder
+		| SlashCommandSubcommandsOnlyBuilder;
 	execute: (
 		client: MoulinetteClient,
 		interaction: ChatInputCommandInteraction,
-	) => Promise<InteractionReplyOptions>;
+	) => InteractionReplyOptions | Promise<InteractionReplyOptions>;
 	autocomplete?: (
 		interaction: AutocompleteInteraction,
-	) => Promise<ApplicationCommandChoicesData[]>;
+	) => AutocompleteReturnable | Promise<AutocompleteReturnable>;
 };
 
-type MoulinetteCommand = 
-  | MoulinetteSlashCommand 
+type MoulinetteCommand = MoulinetteSlashCommand;
 
 export type { MoulinetteCommand as default };
