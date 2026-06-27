@@ -9,7 +9,6 @@ export default model<ISession>(
 	"sessions",
 	new Schema<ISession>(
 		{
-			//_id: { type: String, required: true },
 			uuid: { type: String, required: true },
 			granted: { type: Boolean, default: false },
 		},
