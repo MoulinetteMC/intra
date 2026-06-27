@@ -1,25 +1,32 @@
-FROM node:24-alpine
-
-# Build arguments and environment
-ARG NODE_ENV=production
-ENV NODE_ENV=${NODE_ENV}
+FROM node:24-alpine AS builder
 
 WORKDIR /home/node/app
 
-# Install dependencies first to leverage Docker cache. Prefer npm ci, fall back to npm install.
 COPY package*.json ./
+
 RUN set -eux; \
   if [ -f package-lock.json ]; then \
-  npm ci --omit=dev --no-audit --no-fund; \
+    npm ci --no-audit --no-fund; \
   else \
-  npm install --no-audit --no-fund; \
+    npm install --no-audit --no-fund; \
   fi
 
-# Copy app files and set ownership to non-root user
-COPY --chown=node:node . .
+COPY . .
+
+RUN npm run build
+RUN npm prune --omit=dev
+
+FROM node:24-alpine AS runtime
+
+WORKDIR /home/node/app
+
+COPY --from=builder --chown=node:node /home/node/app/node_modules ./node_modules
+COPY --from=builder --chown=node:node /home/node/app/dist ./dist
+COPY --from=builder --chown=node:node /home/node/app/package*.json ./
+
+ARG NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
 
 USER node
 
-EXPOSE 3005
-
-CMD ["node", "home.js"]
+CMD ["npm", "start"]
