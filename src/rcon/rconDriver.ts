@@ -1,12 +1,17 @@
 import { Rcon } from "rcon-client";
 
 export default async function RconDriver(command: string) {
-	if (!process.env.RCON_PWD) throw new Error("RCON_PWD not set.");
+	if (
+		!process.env["RCON_HOST"] ||
+		!process.env["RCON_PWD"] ||
+		!process.env["RCON_PORT"]
+	)
+		throw new Error("RCON_PWD not set.");
 
 	const rcon = await Rcon.connect({
-		host: "moulinettemc-server",
-		port: 25575,
-		password: process.env.RCON_PWD,
+		host: process.env["RCON_HOST"],
+		port: Number(process.env["RCON_PORT"]),
+		password: process.env["RCON_PWD"],
 	});
 
 	try {
