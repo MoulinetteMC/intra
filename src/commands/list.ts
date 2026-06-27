@@ -1,26 +1,21 @@
-const {
-	Client,
-	ChatInputCommandInteraction,
-	codeBlock,
+import {
 	SlashCommandBuilder,
 	EmbedBuilder,
 	MessageFlags,
-} = require("discord.js");
-const getPlayerList = require("../rcon/getPlayerList");
+} from "discord.js";
+import RconGetPlayerList from "../rcon/getPlayerList.js";
+import type MoulinetteCommand from "../types/command.js";
 
-module.exports = {
+export default <MoulinetteCommand>{
 	data: new SlashCommandBuilder()
 		.setName("list")
 		.setDescription("Get players list online on the server."),
 
-	/**
-	 * @param {Client} client
-	 * @param {ChatInputCommandInteraction} interaction
-	 */
-	async execute(client, interaction) {
-		const playerList = await getPlayerList();
+	async execute() {
+		const playerList = await RconGetPlayerList();
+
 		if (playerList)
-			return await interaction.reply({
+			return {
 				embeds: [
 					new EmbedBuilder()
 						.setColor("Blurple")
@@ -30,15 +25,15 @@ module.exports = {
 						),
 				],
 				flags: MessageFlags.Ephemeral,
-			});
+			};
 		else
-			return await interaction.reply({
+			return {
 				embeds: [
 					new EmbedBuilder()
 						.setColor("Blurple")
 						.setDescription("There is no player online."),
 				],
 				flags: MessageFlags.Ephemeral,
-			});
+			};
 	},
 };
