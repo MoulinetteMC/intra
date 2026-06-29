@@ -1,4 +1,5 @@
 import {
+	type APIApplicationCommand,
 	type APIButtonComponentWithCustomId,
 	Client,
 	type ClientOptions,
@@ -32,9 +33,11 @@ export default class MoulinetteClient extends Client {
 		this.commands = new Collection();
 		this.components = new Collection();
 
-		console.log("α Starting Intra-MoulinetteMC");
+		console.log("> Starting Intra-MoulinetteMC\n");
 
-		void this.init().catch((e) => console.error("Initialization failed: ", e));
+		void this.init().catch((e) => {
+			throw e;
+		});
 	}
 
 	public commands: Collection<string, MoulinetteCommand>;
@@ -50,8 +53,9 @@ export default class MoulinetteClient extends Client {
 		await this.loadEvents();
 		await this.loadComponents();
 		await this.connectDatabase();
-		this.startApi();
+		await this.startApi();
 		await this.login(process.env["DISCORD_TOKEN"]);
+		console.log("! Initialisation complete");
 	}
 
 	private async loadCommands(): Promise<void> {
@@ -68,7 +72,7 @@ export default class MoulinetteClient extends Client {
 			this.commands.set(command.data.name, command);
 		}
 
-		console.log(`> ${this.commands.size} commands loaded !`);
+		console.log(`> ${this.commands.size} commands loaded!`);
 	}
 
 	private async registerCommands(): Promise<void> {
@@ -92,9 +96,9 @@ export default class MoulinetteClient extends Client {
 					{
 						body: this.commands.map((c) => c.data.toJSON()),
 					},
-				)) as any[];
+				)) as APIApplicationCommand[];
 
-			console.log(`> ${data.length} commands registered !`);
+			console.log(`> ${data.length} commands registered!\n`);
 		} catch (e) {
 			console.error(e);
 		}
@@ -127,7 +131,7 @@ export default class MoulinetteClient extends Client {
 
 			eventCount++;
 		}
-		console.log(`> ${eventCount} events loaded !`);
+		console.log(`> ${eventCount} events loaded !\n`);
 	}
 
 	private async loadComponents(): Promise<void> {
@@ -141,35 +145,40 @@ export default class MoulinetteClient extends Client {
 			const component = module.default as MoulinetteComponent;
 
 			if (
-				component.regexp.test(
+				!component.regexp.test(
 					(component.data.toJSON() as APIButtonComponentWithCustomId).custom_id,
 				)
 			) {
-				console.error("Component's RegExp does not matches.");
-				break;
+				console.error(`- [component] ${component.regexp} do not match.`);
+				continue;
 			}
 
 			console.log(`+ [component] ${component.regexp.toString()}`);
 			this.components.set(component.regexp, component);
 		}
 
-		console.log(`> ${this.components.size} components loaded !`);
+		console.log(`> ${this.components.size} components loaded!\n`);
 	}
 
 	private async connectDatabase(): Promise<void> {
 		if (!process.env["DATABASE_URI"]) throw new Error("DATABASE_URI not set.");
-		connect(process.env["DATABASE_URI"], {
+		await connect(process.env["DATABASE_URI"], {
 			autoIndex: false, // Don't build indexes
 			maxPoolSize: 10, // Maintain up to 10 socket connections
 			serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
 			socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
 			family: 4, // Use IPv4, skip trying IPv6
-		}).then(() => {
-			console.log("> MongoDB connected !");
-		});
+		})
+			.then(() => {
+				console.log("> MongoDB connected!\n");
+			})
+			.catch((err) => {
+				throw err;
+			});
 	}
 
-	private startApi(): void {
-		ApiExpress(this);
+	private async startApi(): Promise<void> {
+		await ApiExpress(this);
+		console.log(`> ExpressJS server online!\n`);
 	}
 }
