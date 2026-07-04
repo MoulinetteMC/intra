@@ -9,8 +9,10 @@ export default async function RconGetPlayerList(): Promise<string[]> {
 	if (endOfLine === undefined || endOfLine.includes("players online"))
 		return [];
 
-	return endOfLine
+	const res = endOfLine
 		.trim()
 		.split(",")
 		.map((name) => name.trim());
+		
+	return res;
 }

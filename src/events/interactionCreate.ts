@@ -78,7 +78,7 @@ export default MoulinetteEventBuilder({
 			if (!command || !command.autocomplete) return;
 
 			try {
-				interaction.respond(await command.autocomplete(interaction));
+				await interaction.respond(await command.autocomplete(interaction));
 			} catch (error) {
 				console.error(error);
 				return;

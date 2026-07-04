@@ -8,7 +8,7 @@ export default async function RconGetFingerprint(): Promise<
 	if (!response) return undefined;
 
 	const match = response.match(/([a-f0-9]{64})/g);
-	if (!match) return void console.error("Impossible to retrieve fingerprint.");
+	if (!match) return void console.error("Fingerprint cannot be extracted.");
 
 	return match[0];
 }
