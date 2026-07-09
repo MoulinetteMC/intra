@@ -1,6 +1,5 @@
 import {
 	ComponentType,
-	ButtonInteraction,
 	type InteractionEditReplyOptions,
 } from "discord.js";
 
@@ -14,10 +13,10 @@ export default MoulinetteEventBuilder({
 		if (interaction.isChatInputCommand()) {
 			const cmd = client.commands.get(interaction.commandName);
 
-			if (!cmd)
-				return console.error(
-					`Command "${interaction.commandName}" do not exist`,
-				);
+			if (!cmd) {
+				console.error(`Command "${interaction.commandName}" do not exist`);
+				return;
+			}
 
 			// Check if the user/member have access to the server.
 			if (!process.env["A1_GUILD_ID"] || !process.env["ROLE_ID"])
@@ -28,8 +27,11 @@ export default MoulinetteEventBuilder({
 				const moulinetteRole = await a1Guild.roles.fetch(
 					process.env["ROLE_ID"],
 				);
-				if (!moulinetteRole)
-					return console.error("MoulinetteRole has not been found.");
+
+				if (!moulinetteRole) {
+					console.error("MoulinetteRole has not been found.");
+					return;
+				}
 
 				if (!moulinetteRole.members.has(interaction.user.id))
 					return void (await interaction.reply(
@@ -39,9 +41,7 @@ export default MoulinetteEventBuilder({
 				// Try to execute the command.
 				console.log(`→ ${cmd.data.name} : ${interaction.user.username}`);
 
-				const reply = cmd
-					? await cmd.execute(client, interaction as never)
-					: replyError("Unknown command");
+				const reply = await cmd.execute(client, interaction);
 
 				if (interaction.deferred || interaction.replied) {
 					await interaction.editReply(reply as InteractionEditReplyOptions);
@@ -59,23 +59,23 @@ export default MoulinetteEventBuilder({
 				key.test(interaction.customId),
 			);
 
-			if (!cmpt)
-				return console.error(
-					`${interaction.customId} have no matching component.`,
-				);
+			if (!cmpt) {
+				console.error(`${interaction.customId} have no matching component.`);
+				return;
+			}
 
 			try {
 				console.log(
-					`⌖ ${cmpt.regexp.toString()} : ${interaction.user.username}`,
+					`⌖ ${cmpt.pattern.toString()} : ${interaction.user.username}`,
 				);
-				await cmpt.execute(client, interaction as ButtonInteraction);
+				await cmpt.execute(client, interaction);
 			} catch (err) {
 				console.error(err);
 			}
 		} else if (interaction.isAutocomplete()) {
 			const command = client.commands.get(interaction.commandName);
 
-			if (!command || !command.autocomplete) return;
+			if (!command?.autocomplete) return;
 
 			try {
 				await interaction.respond(await command.autocomplete(interaction));

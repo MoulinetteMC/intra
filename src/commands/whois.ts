@@ -1,9 +1,9 @@
-import type MoulinetteCommand from "../types/command.js";
-import { SlashCommandBuilder, EmbedBuilder, MessageFlags } from "discord.js";
+import { EmbedBuilder, MessageFlags, SlashCommandBuilder } from "discord.js";
 import Players from "../models/players.js";
+import type { MoulinetteSlashCommand } from "../types/command.js";
 import { replyError } from "../util/functions.js";
 
-export default <MoulinetteCommand>{
+export default {
 	data: new SlashCommandBuilder()
 		.setName("whois")
 		.setDescription("Find a player on MoulinetteMC")
@@ -31,6 +31,9 @@ export default <MoulinetteCommand>{
 	async execute(_client, interaction) {
 		if (interaction.options.getString("playername")) {
 			const playerName = interaction.options.getString("playername");
+
+			if (!playerName) return replyError("Please provide a playername.");
+
 			const player = await Players.findOne({
 				playername: playerName,
 			});
@@ -77,4 +80,4 @@ export default <MoulinetteCommand>{
 			};
 		} else return replyError("Please use at least one option.");
 	},
-};
+} as MoulinetteSlashCommand;

@@ -4,7 +4,7 @@ import { MoulinetteEventBuilder } from "../types/event.js";
 export default MoulinetteEventBuilder({
 	name: "clientReady",
 	once: true,
-	async execute(_client, client) {
+	execute(_client, client) {
 		console.log(`Ω ${client.user.tag} is online !`);
 
 		if (process.env["NODE_ENV"] == "production") {

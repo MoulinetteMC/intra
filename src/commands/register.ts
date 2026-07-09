@@ -1,11 +1,10 @@
-import type MoulinetteCommand from "../types/command.js";
-
-import { SlashCommandBuilder, EmbedBuilder, MessageFlags } from "discord.js";
-import Players from "../models/players.js";
+import { EmbedBuilder, MessageFlags, SlashCommandBuilder } from "discord.js";
 import { v4 as uuid } from "uuid";
+import Players from "../models/players.js";
+import type { MoulinetteSlashCommand } from "../types/command.js";
 import { replyError } from "../util/functions.js";
 
-export default <MoulinetteCommand>{
+export default {
 	data: new SlashCommandBuilder()
 		.setName("register")
 		.setDescription("Register yourself to MoulinetteMC")
@@ -38,7 +37,7 @@ export default <MoulinetteCommand>{
 				`This name as been already taken by <@${preExistingName.userid}>`,
 			);
 
-		Players.create({
+		await Players.create({
 			_id: uuid(),
 			playername: playerName,
 			userid: interaction.user.id,
@@ -51,4 +50,4 @@ export default <MoulinetteCommand>{
 			flags: MessageFlags.Ephemeral,
 		};
 	},
-};
+} as MoulinetteSlashCommand;

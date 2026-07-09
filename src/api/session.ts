@@ -17,7 +17,7 @@ export default function ApiSession() {
 		else if (!sessionData.granted)
 			// Session denied
 			return res.status(200).json({ auth: 0 });
-		else if (sessionData.granted) {
+		else {
 			// Session granted
 			const playerData = await Players.findById(
 				sessionData.uuid,
@@ -32,7 +32,7 @@ export default function ApiSession() {
 				playername: playerData.playername,
 				uuid: sessionData.uuid,
 			});
-		} else return res.status(500).json({ error: "Something goes wrong..." });
+		}
 	});
 
 	return router;

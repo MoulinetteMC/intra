@@ -8,12 +8,12 @@ import { type MoulinetteButtonComponent } from "../types/component.js";
 import RconGetFingerprint from "../rcon/getFingerprint.js";
 import { replyError } from "../util/functions.js";
 
-export default <MoulinetteButtonComponent>{
+export default {
 	data: new ButtonBuilder()
 		.setCustomId(`fingerprint`)
 		.setStyle(ButtonStyle.Primary)
 		.setLabel("Get server's fingerprint"),
-	regexp: /^fingerprint$/,
+	pattern: /^fingerprint$/,
 	async execute(_client, interaction) {
 		const figerprint = await RconGetFingerprint();
 
@@ -32,5 +32,7 @@ export default <MoulinetteButtonComponent>{
 			],
 			components: [],
 		});
+
+		return;
 	},
-};
+} as MoulinetteButtonComponent;

@@ -1,10 +1,9 @@
-import type MoulinetteCommand from "../types/command.js";
-
-import { SlashCommandBuilder, MessageFlags, EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags, SlashCommandBuilder } from "discord.js";
 import Players from "../models/players.js";
+import type { MoulinetteSlashCommand } from "../types/command.js";
 import { replyError } from "../util/functions.js";
 
-export default <MoulinetteCommand>{
+export default {
 	data: new SlashCommandBuilder()
 		.setName("rename")
 		.setDescription("Rename yourself in-game")
@@ -15,8 +14,12 @@ export default <MoulinetteCommand>{
 				.setRequired(true),
 		),
 	async execute(_client, interaction) {
+		const playerName = interaction.options.getString("playername");
+
+		if (!playerName) return replyError("Please provide a playername.");
+
 		const preExistingName = await Players.findOne({
-			playername: interaction.options.getString("playername"),
+			playername: playerName,
 		});
 
 		if (preExistingName)
@@ -33,18 +36,18 @@ export default <MoulinetteCommand>{
 
 		await Players.findOneAndUpdate(
 			{ userid: interaction.user.id },
-			{ playername: interaction.options.getString("playername") },
+			{ playername: playerName },
 		);
 		return {
 			embeds: [
 				new EmbedBuilder()
 					.setDescription(
 						`Your name has been changed from **\`${preExistingAccount.playername}\`** ` +
-							`to **\`${interaction.options.getString("playername")}\`**`,
+							`to **\`${playerName}\`**`,
 					)
 					.setColor("Green"),
 			],
 			flags: [MessageFlags.Ephemeral],
 		};
 	},
-};
+} as MoulinetteSlashCommand;

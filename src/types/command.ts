@@ -9,11 +9,7 @@ import {
 } from "discord.js";
 import MoulinetteClient from "../classes/client.js";
 
-type AutocompleteReturnable = readonly ApplicationCommandOptionChoiceData<
-	string | number
->[];
-
-export type MoulinetteSlashCommand = {
+export interface MoulinetteSlashCommand {
 	data:
 		| SlashCommandBuilder
 		| SlashCommandOptionsOnlyBuilder
@@ -24,9 +20,7 @@ export type MoulinetteSlashCommand = {
 	) => InteractionReplyOptions | Promise<InteractionReplyOptions>;
 	autocomplete?: (
 		interaction: AutocompleteInteraction,
-	) => AutocompleteReturnable | Promise<AutocompleteReturnable>;
-};
-
-type MoulinetteCommand = MoulinetteSlashCommand;
-
-export type { MoulinetteCommand as default };
+	) =>
+		| readonly ApplicationCommandOptionChoiceData[]
+		| Promise<readonly ApplicationCommandOptionChoiceData[]>;
+}

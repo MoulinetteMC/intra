@@ -7,17 +7,14 @@ import {
 	REST,
 	Routes,
 } from "discord.js";
-
-import { join, dirname, resolve } from "node:path";
-import { readdirSync, existsSync } from "node:fs";
-import { fileURLToPath } from "url";
-
 import { connect } from "mongoose";
-
-import type MoulinetteCommand from "../types/command.js";
-import type MoulinetteEvent from "../types/event.js";
+import { existsSync, readdirSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "url";
 import ApiExpress from "../api/express.js";
+import type { MoulinetteSlashCommand } from "../types/command.js";
 import type MoulinetteComponent from "../types/component.js";
+import type MoulinetteEvent from "../types/event.js";
 
 function isJsOrTsFile(file: string): boolean {
 	return file.endsWith(".js") || file.endsWith(".ts");
@@ -35,12 +32,12 @@ export default class MoulinetteClient extends Client {
 
 		console.log("> Starting Intra-MoulinetteMC\n");
 
-		void this.init().catch((e) => {
+		void this.init().catch((e: unknown) => {
 			throw e;
 		});
 	}
 
-	public commands: Collection<string, MoulinetteCommand>;
+	public commands: Collection<string, MoulinetteSlashCommand>;
 	public components: Collection<RegExp, MoulinetteComponent>;
 	private directory: string = resolve(
 		dirname(fileURLToPath(import.meta.url)),
@@ -65,14 +62,16 @@ export default class MoulinetteClient extends Client {
 
 		const commandFiles = readdirSync(commandsPath).filter(isJsOrTsFile);
 		for (const file of commandFiles) {
-			const module = await import(resolve(commandsPath, file));
-			const command = module.default as MoulinetteCommand;
+			const module = (await import(resolve(commandsPath, file))) as {
+				default: MoulinetteSlashCommand;
+			};
+			const command = module.default;
 
 			console.log(`+ [command] /${command.data.name}`);
 			this.commands.set(command.data.name, command);
 		}
 
-		console.log(`> ${this.commands.size} commands loaded!`);
+		console.log(`> ${String(this.commands.size)} commands loaded!`);
 	}
 
 	private async registerCommands(): Promise<void> {
@@ -98,7 +97,7 @@ export default class MoulinetteClient extends Client {
 					},
 				)) as APIApplicationCommand[];
 
-			console.log(`> ${data.length} commands registered!\n`);
+			console.log(`> ${String(data.length)} commands registered!\n`);
 		} catch (e) {
 			console.error(e);
 		}
@@ -113,25 +112,27 @@ export default class MoulinetteClient extends Client {
 
 		const eventFiles = readdirSync(eventsPath).filter(isJsOrTsFile);
 		for (const file of eventFiles) {
-			const module = await import(resolve(eventsPath, file));
-			const event = module.default as MoulinetteEvent;
+			const module = (await import(resolve(eventsPath, file))) as {
+				default: MoulinetteEvent;
+			};
+			const event = module.default;
 			console.log(`+ [event]: ${event.name}`);
 
 			if (event.once) {
 				this.once(
 					event.name,
-					async (...args) => await event.execute(this, ...args),
+					(...args) => { void event.execute(this, ...args); },
 				);
 			} else {
 				this.on(
 					event.name,
-					async (...args) => await event.execute(this, ...args),
+					(...args) => { void event.execute(this, ...args); },
 				);
 			}
 
 			eventCount++;
 		}
-		console.log(`> ${eventCount} events loaded !\n`);
+		console.log(`> ${String(eventCount)} events loaded !\n`);
 	}
 
 	private async loadComponents(): Promise<void> {
@@ -141,23 +142,26 @@ export default class MoulinetteClient extends Client {
 
 		const commandFiles = readdirSync(componentsPath).filter(isJsOrTsFile);
 		for (const file of commandFiles) {
-			const module = await import(resolve(componentsPath, file));
-			const component = module.default as MoulinetteComponent;
+
+			const module = (await import(resolve(componentsPath, file))) as {
+				default: MoulinetteComponent;
+			};
+			const component = module.default;
 
 			if (
-				!component.regexp.test(
+				!component.pattern.test(
 					(component.data.toJSON() as APIButtonComponentWithCustomId).custom_id,
 				)
 			) {
-				console.error(`- [component] ${component.regexp} do not match.`);
+				console.error(`- [component] ${String(component.pattern)} do not match.`);
 				continue;
 			}
 
-			console.log(`+ [component] ${component.regexp.toString()}`);
-			this.components.set(component.regexp, component);
+			console.log(`+ [component] ${String(component.pattern)}`);
+			this.components.set(component.pattern, component);
 		}
 
-		console.log(`> ${this.components.size} components loaded!\n`);
+		console.log(`> ${String(this.components.size)} components loaded!\n`);
 	}
 
 	private async connectDatabase(): Promise<void> {
@@ -172,7 +176,7 @@ export default class MoulinetteClient extends Client {
 			.then(() => {
 				console.log("> MongoDB connected!\n");
 			})
-			.catch((err) => {
+			.catch((err: unknown) => {
 				throw err;
 			});
 	}

@@ -1,11 +1,11 @@
-import type MoulinetteCommand from "../types/command.js";
-import { SlashCommandBuilder, MessageFlags, EmbedBuilder } from "discord.js";
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
+import { EmbedBuilder, MessageFlags, SlashCommandBuilder } from "discord.js";
 import Players from "../models/players.js";
 import Sessions from "../models/sessions.js";
+import type { MoulinetteSlashCommand } from "../types/command.js";
 import { replyError } from "../util/functions.js";
 
-export default <MoulinetteCommand>{
+export default {
 	data: new SlashCommandBuilder()
 		.setName("session")
 		.setDescription("Get info about sessions")
@@ -19,7 +19,7 @@ export default <MoulinetteCommand>{
 		),
 	async execute(_client, interaction) {
 		const playerAccount = await Players.findOne({
-			userid: (interaction.options.getUser("user") || interaction.user).id,
+			userid: (interaction.options.getUser("user") ?? interaction.user).id,
 		});
 
 		if (!playerAccount)
@@ -46,7 +46,7 @@ export default <MoulinetteCommand>{
 								sessionsHistory
 									.map((s) => {
 										const unixDate = dayjs(s._id.getTimestamp()).unix();
-										return `- <t:${unixDate}:f> (<t:${unixDate}:R>)`;
+										return `- <t:${String(unixDate)}:f> (<t:${String(unixDate)}:R>)`;
 									})
 									.join("\n"),
 							)
@@ -68,7 +68,6 @@ export default <MoulinetteCommand>{
 					flags: [MessageFlags.Ephemeral],
 				};
 			}
-		} else
-			return replyError(`Undefined subcommand **\`${subcmd}\`**`);
+		} else return replyError(`Undefined subcommand **\`${subcmd}\`**`);
 	},
-};
+} as MoulinetteSlashCommand;

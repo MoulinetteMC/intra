@@ -8,15 +8,21 @@ import {
 import Sessions from "../models/sessions.js";
 import type { MoulinetteButtonComponent } from "../types/component.js";
 import fingerprintButton from "./fingerprintButton.js";
+import { replyError } from "../util/functions.js";
 
-export default <MoulinetteButtonComponent>{
+export default {
 	data: new ButtonBuilder()
 		.setCustomId(`session:grant-00000000000`)
 		.setStyle(ButtonStyle.Success)
 		.setLabel("Yes"),
-	regexp: /^session:grant-[a-f0-9]{11}$/,
+	pattern: /^session:grant-[a-f0-9]{11}$/,
 	async execute(_client, interaction) {
-		const token = interaction.customId.match(/[a-f0-9]{11}$/)?.[0];
+		const token = /[a-f0-9]{11}$/.exec(interaction.customId)?.[0];
+
+		if (!token)
+			return interaction.reply(
+				replyError("Invalid session token, please try again later..."),
+			);
 
 		const session = await Sessions.findByIdAndUpdate(token, {
 			granted: true,
@@ -34,7 +40,7 @@ export default <MoulinetteButtonComponent>{
 				flags: MessageFlags.Ephemeral,
 			});
 
-		interaction.update({
+		await interaction.update({
 			embeds: [
 				new EmbedBuilder()
 					.setColor("Green")
@@ -48,4 +54,4 @@ export default <MoulinetteButtonComponent>{
 
 		return;
 	},
-};
+} as MoulinetteButtonComponent;

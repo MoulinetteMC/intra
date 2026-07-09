@@ -6,17 +6,16 @@ import ApiSession from "./session.js";
 const app = express();
 
 export default async function ApiExpress(client: Client): Promise<void> {
-	return await new Promise((resolve, reject) => {
+	await new Promise<void>((resolve, reject) => {
 		if (!process.env["API_PORT"]) throw new Error("API_PORT not set");
 
 		app.get(["/", "/login", "/session"], (req, _res, next) => {
-			console.log(
-				`◊ ${req.originalUrl} : ${req.socket.remoteAddress ? req.socket.remoteAddress.split(":").pop() : "unknown IP"}`,
-			);
+			const ip = req.socket.remoteAddress?.split(":").pop() ?? "unknown IP";
+			console.log(`◊ ${req.originalUrl} : ${ip}`);
 			next();
 		});
 
-		app.get("/", async (_req, res) => res.status(200).json({ status: "OK" }));
+		app.get("/", (_req, res) => res.status(200).json({ status: "OK" }));
 
 		app.use("/login", ApiLogin(client));
 		app.use("/session", ApiSession());

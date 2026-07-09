@@ -13,8 +13,12 @@ export default function ApiLogin(client: Client) {
 		if (!req.query["username"])
 			return res.status(400).json({ error: "Missing username" });
 
+		const username = req.query["username"];
+		if (typeof username !== "string")
+			return res.status(400).json({ error: "Invalid username" });
+
 		const playerData = await Players.findOne({
-			playername: req.query["username"].toString(),
+			playername: username,
 		});
 
 		if (!playerData)
@@ -22,12 +26,12 @@ export default function ApiLogin(client: Client) {
 
 		const token = uid();
 
-		Session.create({
+		await Session.create({
 			_id: token,
 			uuid: playerData._id.toString(),
 		});
 
-		client.users.send(playerData.userid, {
+		await client.users.send(playerData.userid, {
 			embeds: [
 				new EmbedBuilder()
 					.setColor("Blurple")
