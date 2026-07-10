@@ -1,50 +1,53 @@
 {
-	"name": "moulinettemc-intra",
-	"version": "2.0.0",
-	"description": "MoulinetteMC's manager - Discord Bot",
-	"homepage": "https://github.com/moulinettemc/intra#readme",
-	"bugs": {
-		"url": "https://github.com/moulinettemc/intra/issues"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/moulinettemc/intra.git"
-	},
-	"license": "MIT",
-	"author": "ValentinKh",
-	"type": "module",
-	"exports": "./dist/home.js",
-	"engines": {
-		"node": ">=24"
-	},
-	"scripts": {
-		"dev": "tsx --watch ./src/home.ts",
-		"build": "tsc && tsc-alias",
-		"clean": "rm -rf ./dist",
-		"lint": "eslint ./src --ext .ts",
-		"start": "node ./dist/index.js",
-		"test": "vitest"
-	},
-	"dependencies": {
-		"dayjs": "^1.11.19",
-		"discord.js": "^14.26.4",
-		"dotenv": "^17.4.2",
-		"express": "^5.2.1",
-		"mongoose": "^9.7.3",
-		"rcon-client": "^4.2.5",
-		"uid": "^2.0.2",
-		"uuid": "^14.0.1"
-	},
-	"devDependencies": {
-		"@eslint/js": "^10.0.1",
-		"@types/express": "^5.0.6",
-		"@types/node": "^26.0.1",
-		"eslint": "^10.6.0",
-		"nodemon": "^3.1.14",
-		"ts-node": "^10.9.2",
-		"tsx": "^4.22.4",
-		"typescript": "^6.0.3",
-		"typescript-eslint": "^8.63.0",
-		"vitest": "^4.1.9"
-	}
+  "name": "moulinettemc-intra",
+  "version": "2.0.0",
+  "description": "MoulinetteMC's manager - Discord Bot",
+  "homepage": "https://github.com/moulinettemc/intra#readme",
+  "bugs": {
+    "url": "https://github.com/moulinettemc/intra/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/moulinettemc/intra.git"
+  },
+  "license": "MIT",
+  "author": "ValentinKh",
+  "type": "module",
+  "exports": "./dist/home.js",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "tsx --watch ./src/home.ts",
+    "build": "tsc && tsc-alias",
+    "clean": "rm -rf ./dist",
+    "lint": "eslint ./src --ext .ts",
+    "format": "prettier --write ./src",
+    "start": "node ./dist/index.js",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "dayjs": "^1.11.19",
+    "discord.js": "^14.26.4",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mongoose": "^9.7.3",
+    "rcon-client": "^4.2.5",
+    "uid": "^2.0.2",
+    "uuid": "^14.0.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.0.1",
+    "eslint": "^10.6.0",
+    "eslint-config-prettier": "^10.1.8",
+    "nodemon": "^3.1.14",
+    "prettier": "3.9.5",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.63.0",
+    "vitest": "^4.1.9"
+  }
 }

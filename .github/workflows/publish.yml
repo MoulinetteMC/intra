@@ -1,5 +1,5 @@
 name: Publish 🐋
-on: 
+on:
   push:
     branches:
       - main
@@ -21,7 +21,7 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-        
+
       - name: Extract Metadata 📑
         id: meta
         uses: docker/metadata-action@v5

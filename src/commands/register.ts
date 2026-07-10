@@ -5,49 +5,49 @@ import type { MoulinetteSlashCommand } from "../types/command.js";
 import { replyError } from "../util/functions.js";
 
 export default {
-	data: new SlashCommandBuilder()
-		.setName("register")
-		.setDescription("Register yourself to MoulinetteMC")
-		.addStringOption((opt) =>
-			opt
-				.setName("playername")
-				.setDescription("In-game pseudo")
-				.setRequired(true),
-		),
+  data: new SlashCommandBuilder()
+    .setName("register")
+    .setDescription("Register yourself to MoulinetteMC")
+    .addStringOption((opt) =>
+      opt
+        .setName("playername")
+        .setDescription("In-game pseudo")
+        .setRequired(true),
+    ),
 
-	async execute(_client, interaction) {
-		const preExistingAccount = await Players.findOne({
-			userid: interaction.user.id,
-		});
+  async execute(_client, interaction) {
+    const preExistingAccount = await Players.findOne({
+      userid: interaction.user.id,
+    });
 
-		if (preExistingAccount)
-			return replyError(
-				`You are already registered under the name **\`${preExistingAccount.playername}\`**`,
-			);
+    if (preExistingAccount)
+      return replyError(
+        `You are already registered under the name **\`${preExistingAccount.playername}\`**`,
+      );
 
-		const playerName = interaction.options.getString("playername");
-		if (!playerName) return replyError("Please specify your playername.");
+    const playerName = interaction.options.getString("playername");
+    if (!playerName) return replyError("Please specify your playername.");
 
-		const preExistingName = await Players.findOne({
-			playername: playerName,
-		});
+    const preExistingName = await Players.findOne({
+      playername: playerName,
+    });
 
-		if (preExistingName)
-			return replyError(
-				`This name as been already taken by <@${preExistingName.userid}>`,
-			);
+    if (preExistingName)
+      return replyError(
+        `This name as been already taken by <@${preExistingName.userid}>`,
+      );
 
-		await Players.create({
-			_id: uuid(),
-			playername: playerName,
-			userid: interaction.user.id,
-		});
+    await Players.create({
+      _id: uuid(),
+      playername: playerName,
+      userid: interaction.user.id,
+    });
 
-		return {
-			embeds: [
-				new EmbedBuilder().setDescription("Registered !").setColor("Green"),
-			],
-			flags: MessageFlags.Ephemeral,
-		};
-	},
+    return {
+      embeds: [
+        new EmbedBuilder().setDescription("Registered !").setColor("Green"),
+      ],
+      flags: MessageFlags.Ephemeral,
+    };
+  },
 } as MoulinetteSlashCommand;
