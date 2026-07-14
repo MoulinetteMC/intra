@@ -21,3 +21,7 @@ README.md
 # Docker
 Dockerfile
 docker-compose.yml
+
+# Format & Lint
+eslint.config.mjs
+.prettierrc
