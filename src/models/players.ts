@@ -2,6 +2,7 @@ import { Schema, model, type InferSchemaType } from "mongoose";
 
 const playerSchema = new Schema(
   {
+    _id: { type: String, required: true },
     playername: { type: String, required: true },
     userid: { type: String, required: true },
   },
