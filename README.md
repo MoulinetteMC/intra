@@ -3,7 +3,7 @@
   <h1>Intra-MoulinetteMC</h1>
 </div>
 
-Bot Discord d'assistance et de gestion du serveur **`MoulinetteMC`**.
+**MoulinetteMC**'s internal API for authentication management and miscellaneous.
 
 # Utilisation
 
@@ -17,12 +17,17 @@ services:
     #   server:
     #     condition: service_started
     environment:
-      TOKEN: "DISCORD_TOKEN"
-      DATABASE: "MONGO_DB_URI"
-      CLIENT_ID: "DISCORD_BOT_ID"
-      A1: "GUILD_ID"
+      DISCORD_TOKEN: "DISCORD_BOT_TOKEN"
+      DISCORD_CLIENT_ID: "DISCORD_BOT_CLIENT_ID"
+      DATABASE_URI: "mongodb+srv://..."
+      API_PORT: 3000
+      A1_GUILD_ID: "GUILD_ID"
       ROLE_ID: "ROLE_ID"
+      RCON_HOST: "rcon-host"
+      RCON_PORT: 25575
+      RCON_PWD: 8cc31124b72373f7b0e10311
     ports:
-      - "PORT:3005"
+      - "HOST_PORT:API_PORT"
     restart: unless-stopped
+    ...
 ```
