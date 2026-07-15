@@ -17,7 +17,7 @@ import type MoulinetteComponent from "../types/component.js";
 import type MoulinetteEvent from "../types/event.js";
 
 function isJsOrTsFile(filename: string): boolean {
-  return /^(?!.*\.test|d\.(js|ts)$).*\.(js|ts)$/.test(filename);
+  return /^(?!.*\.test\.)(?!.*\.d\.ts$).+\.(js|ts)$/.test(filename);
 }
 
 export default class MoulinetteClient extends Client {
