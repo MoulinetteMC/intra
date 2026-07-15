@@ -16,8 +16,8 @@ import type { MoulinetteSlashCommand } from "../types/command.js";
 import type MoulinetteComponent from "../types/component.js";
 import type MoulinetteEvent from "../types/event.js";
 
-function isJsOrTsFile(file: string): boolean {
-  return file.endsWith(".js") || file.endsWith(".ts");
+function isJsOrTsFile(filename: string): boolean {
+  return /^(?!.*\.test|d\.(js|ts)$).*\.(js|ts)$/.test(filename);
 }
 
 export default class MoulinetteClient extends Client {
