@@ -1,6 +1,7 @@
-import { Schema, model } from "mongoose";
+import { Schema, Types, model } from "mongoose";
 
 interface ISession {
+  _id: Types.ObjectId;
   uuid: string;
   granted: boolean;
 }

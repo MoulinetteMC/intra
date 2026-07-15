@@ -1,6 +1,7 @@
-import { Schema, model } from "mongoose";
+import { Schema, Types, model } from "mongoose";
 
 interface IPlayer {
+  _id: Types.ObjectId;
   playername: string;
   userid: string;
 }
