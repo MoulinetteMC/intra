@@ -28,7 +28,7 @@ export default {
     const subcmd = interaction.options.getSubcommand();
     if (subcmd == "history") {
       const sessionsHistory = await Sessions.find(
-        { uuid: playerAccount._id.toString(), createdAt: { $exists: true } },
+        { uuid: playerAccount.id, createdAt: { $exists: true } },
         null,
         { sort: "-createdAt" },
       ).limit(10);
@@ -45,7 +45,7 @@ export default {
               .setDescription(
                 sessionsHistory
                   .map((s) => {
-                    const unixDate = dayjs(s._id.getTimestamp()).unix();
+                    const unixDate = dayjs(s.createdAt).unix();
                     return `- <t:${String(unixDate)}:f> (<t:${String(unixDate)}:R>)`;
                   })
                   .join("\n"),

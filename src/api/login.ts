@@ -28,7 +28,7 @@ export default function ApiLogin(client: Client) {
 
     await Session.create({
       _id: token,
-      uuid: playerData._id.toString(),
+      uuid: playerData.id,
     });
 
     await client.users.send(playerData.userid, {
